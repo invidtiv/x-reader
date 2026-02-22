@@ -11,7 +11,7 @@ from loguru import logger
 from typing import Dict, Any, Optional
 
 from x_reader.schema import (
-    UnifiedContent, UnifiedInbox,
+    UnifiedContent, UnifiedInbox, SourceType,
     from_bilibili, from_twitter, from_wechat,
     from_xiaohongshu, from_youtube, from_rss, from_telegram,
 )
@@ -121,7 +121,7 @@ class UniversalReader:
         logger.info(f"Using Jina fallback for: {url}")
         data = fetch_via_jina(url)
         return UnifiedContent(
-            source_type="manual",
+            source_type=SourceType.MANUAL,
             source_name=urlparse(url).netloc,
             title=data["title"],
             content=data["content"],

@@ -237,9 +237,12 @@ class UnifiedInbox:
     def load(self):
         import os
         if os.path.exists(self.filepath):
-            with open(self.filepath, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-                self.items = [UnifiedContent.from_dict(d) for d in data]
+            try:
+                with open(self.filepath, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    self.items = [UnifiedContent.from_dict(d) for d in data]
+            except (json.JSONDecodeError, IOError):
+                self.items = []
 
     def save(self):
         with open(self.filepath, 'w', encoding='utf-8') as f:
