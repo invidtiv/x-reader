@@ -86,7 +86,12 @@ def _login_visible(login_url: str, session_path: Path, platform: str) -> None:
     print("   When done, close the browser or press Ctrl+C.\n")
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        # Prefer real Chrome channel over bundled Chromium to reduce login friction.
+        browser = p.chromium.launch(
+            headless=False,
+            channel="chrome",
+            args=["--disable-blink-features=AutomationControlled"],
+        )
         context = browser.new_context(
             user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
                        "AppleWebKit/537.36 (KHTML, like Gecko) "
