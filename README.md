@@ -244,7 +244,13 @@ User sends URL
 
 ## Author
 
-Built by [@runes_leo](https://x.com/runes_leo) — more AI tools at [leolabs.me](https://leolabs.me)
+*Leo ([@runes_leo](https://x.com/runes_leo)) — AI × Crypto independent builder. Trading on [Polymarket](https://polymarket.com/?r=githuball&via=runes-leo&utm_source=github&utm_content=x-reader), building data and trading systems with Claude Code and Codex.*
+
+[leolabs.me](https://leolabs.me) — writing · community · open-source tools · indie projects · all platforms.
+
+[X Subscription](https://x.com/runes_leo/creator-subscriptions/subscribe) — paid content weekly, or just buy me a coffee 😁
+
+*Learn in public, Build in public.*
 
 ## License
 
