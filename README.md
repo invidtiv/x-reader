@@ -7,7 +7,7 @@ Universal content reader — fetch, transcribe, and digest content from any plat
 
 Give it a URL (article, video, podcast, tweet), get back structured content. Works as CLI, Python library, MCP server, or Claude Code skills.
 
-**简体中文：** [README.zh-CN.md](./README.zh-CN.md)
+**简体中文：** [README.zh.md](./README.zh.md) / [README.zh-CN.md](./README.zh-CN.md)
 
 ## What It Does
 
@@ -29,7 +29,7 @@ x-reader is composable. Use the layers you need:
 | Layer | What | Format | Install |
 |-------|------|--------|---------|
 | **Python CLI/Library** | Basic content fetching + unified schema | See [Install](#install) | Required |
-| **Claude Code Skills** | Video transcription + AI analysis | Copy `skills/` to `~/.claude/skills/` | Optional |
+| **Claude Code Skills** | Video transcription + AI analysis | Copy `skills/` to your Claude Code skills directory | Optional |
 | **MCP Server** | Expose reading as MCP tools | `python mcp_server.py` | Optional |
 
 ### Layer 1: Python CLI
@@ -65,8 +65,10 @@ skills/
 
 Install:
 ```bash
-cp -r skills/video ~/.claude/skills/video
-cp -r skills/analyzer ~/.claude/skills/analyzer
+export CLAUDE_SKILLS_DIR="/path/to/claude-code-skills"
+mkdir -p "$CLAUDE_SKILLS_DIR"
+cp -r skills/video "$CLAUDE_SKILLS_DIR/video"
+cp -r skills/analyzer "$CLAUDE_SKILLS_DIR/analyzer"
 ```
 
 Then in Claude Code, just send a YouTube/Bilibili/podcast link — the video skill auto-triggers and produces a full transcript + summary.
@@ -106,7 +108,7 @@ Claude Code config (`~/.claude/claude_desktop_config.json`):
 |----------|-----------|----------------------|
 | YouTube | ✅ Jina | ✅ yt-dlp subtitles → Groq Whisper fallback |
 | Bilibili (B站) | ✅ API | ✅ via Claude Code skill |
-| X / Twitter | ✅ Jina → Playwright | — |
+| X / Twitter | ✅ oEmbed → FxTwitter → Article/Jina → Playwright | — |
 | WeChat (微信公众号) | ✅ Jina → Playwright | — |
 | Xiaohongshu (小红书) | ✅ Jina → Playwright* | — |
 | Telegram | ✅ Telethon | — |
@@ -117,7 +119,33 @@ Claude Code config (`~/.claude/claude_desktop_config.json`):
 
 > \*XHS requires a one-time login: `x-reader login xhs` (saves session for Playwright fallback)
 >
+> X Articles and login-required X pages can use a saved local browser session: `x-reader login twitter`
+>
 > YouTube Whisper transcription requires `GROQ_API_KEY` — get a free key from [Groq](https://console.groq.com/keys)
+
+### X / Twitter Reading Path
+
+`x-reader` uses a lightweight public-first chain for X:
+
+1. X oEmbed for fast public tweet text.
+2. FxTwitter for structured public tweet fallback.
+3. Jina Reader for public Articles and long-form pages.
+4. Generic Jina Reader for profiles and non-status X pages.
+5. Playwright with saved session for login-required content.
+
+For Articles or gated pages, run:
+
+```bash
+x-reader login twitter
+x-reader "https://x.com/user/status/123"
+```
+
+By default, local X cookies stay local. If you explicitly want to let Jina use
+your saved X session for gated Articles, set:
+
+```bash
+export X_READER_ALLOW_EXTERNAL_SESSION_COOKIES=1
+```
 
 ## Install
 
@@ -209,7 +237,7 @@ x-reader/
 │   │   ├── youtube.py     # yt-dlp subtitle extraction
 │   │   ├── rss.py         # feedparser
 │   │   ├── telegram.py    # Telethon
-│   │   ├── twitter.py     # Jina-based
+│   │   ├── twitter.py     # oEmbed → FxTwitter → Article/Jina → Playwright
 │   │   ├── wechat.py      # Jina → Playwright fallback
 │   │   └── xhs.py         # Jina → Playwright + session fallback
 │   └── utils/
